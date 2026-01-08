@@ -1,20 +1,3 @@
-import { createInterface } from 'node:readline';
-import { commandExit } from './command_exit.js';
-import { commandHelp } from './command_help.js';
-export function getCommands() {
-    return {
-        exit: {
-            name: 'exit',
-            description: 'Exits the pokedex',
-            callback: commandExit,
-        },
-        help: {
-            name: 'help',
-            description: 'Displays a help message',
-            callback: commandHelp,
-        },
-    };
-}
 export function cleanInput(input) {
     return input
         .trim()
@@ -22,25 +5,25 @@ export function cleanInput(input) {
         .split(' ')
         .filter(i => i);
 }
-export function startREPL() {
-    const rl = createInterface({
-        input: process.stdin,
-        output: process.stdout,
-        prompt: 'Pokedex > ',
-    });
+export async function startREPL(state) {
+    const { rl, commands } = state;
     rl.prompt();
-    rl.on('line', line => {
-        if (!line.trim()) {
-            return rl.prompt();
+    rl.on('line', async (line) => {
+        try {
+            if (!line.trim()) {
+                return rl.prompt();
+            }
+            const cleaned = cleanInput(line);
+            if (commands[cleaned[0]]) {
+                await commands[cleaned[0]].callback(state);
+            }
+            else {
+                console.log('Unknown command');
+            }
+            rl.prompt();
         }
-        const cleaned = cleanInput(line);
-        const commands = getCommands();
-        if (commands[cleaned[0]]) {
-            commands[cleaned[0]].callback(commands);
+        catch (error) {
+            console.error(error);
         }
-        else {
-            console.log('Unknown command');
-        }
-        rl.prompt();
     });
 }

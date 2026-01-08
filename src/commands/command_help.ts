@@ -1,6 +1,6 @@
-import type {CLICommand} from './command.js';
+import type {State} from '../state.js';
 
-export function commandHelp(commands: Record<string, CLICommand>) {
+export async function commandHelp({commands}: State) {
   const commandsText = `${Object.values(commands).map(
     command => `\n${command.name}: ${command.description}`,
   )}`;
