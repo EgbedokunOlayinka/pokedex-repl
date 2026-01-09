@@ -5,6 +5,8 @@ import { PokeAPI } from './pokeapi.js';
 import { commandMap } from './commands/command_map.js';
 import { commandMapb } from './commands/command_mapb.js';
 import { Cache } from './pokecache.js';
+import { commandExplore } from './commands/command_explore.js';
+import { commandCatch } from './commands/command_catch.js';
 export function getCommands() {
     return {
         exit: {
@@ -27,6 +29,16 @@ export function getCommands() {
             description: 'Displays the previous page in the pokedex location areas list',
             callback: commandMapb,
         },
+        explore: {
+            name: 'explore',
+            description: 'Find pokemons in a specific location area',
+            callback: commandExplore,
+        },
+        catch: {
+            name: 'catch',
+            description: 'Catch a pokemon!',
+            callback: commandCatch,
+        },
     };
 }
 export function initState() {
@@ -39,5 +51,6 @@ export function initState() {
             prompt: 'Pokedex > ',
         }),
         pokeApi: new PokeAPI(cacheInstance),
+        pokedex: {},
     };
 }

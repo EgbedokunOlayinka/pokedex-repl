@@ -1,7 +1,7 @@
 import { createInterface } from 'node:readline';
 import { startREPL } from '../repl.js';
 import { getCommands } from '../state.js';
-export async function commandMap({ pokeApi, nextLocationsURL, rl }) {
+export async function commandMap({ pokeApi, nextLocationsURL, rl, pokedex, }) {
     try {
         const locations = await pokeApi.fetchLocations(nextLocationsURL);
         locations?.results.forEach(location => {
@@ -16,6 +16,7 @@ export async function commandMap({ pokeApi, nextLocationsURL, rl }) {
                 prompt: 'Pokedex > ',
             }),
             pokeApi,
+            pokedex,
             nextLocationsURL: locations?.next,
             prevLocationsURL: locations?.previous,
         });

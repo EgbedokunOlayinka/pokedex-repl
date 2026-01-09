@@ -2,7 +2,12 @@ import {createInterface} from 'node:readline';
 import {startREPL} from '../repl.js';
 import {getCommands, State} from '../state.js';
 
-export async function commandMapb({pokeApi, prevLocationsURL, rl}: State) {
+export async function commandMapb({
+  pokeApi,
+  prevLocationsURL,
+  rl,
+  pokedex,
+}: State) {
   try {
     if (!prevLocationsURL) {
       console.log("you're on the first page");
@@ -21,6 +26,7 @@ export async function commandMapb({pokeApi, prevLocationsURL, rl}: State) {
         prompt: 'Pokedex > ',
       }),
       pokeApi,
+      pokedex,
       nextLocationsURL: locations?.next,
       prevLocationsURL: locations?.previous,
     });

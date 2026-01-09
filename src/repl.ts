@@ -20,7 +20,7 @@ export async function startREPL(state: State) {
       const cleaned = cleanInput(line);
 
       if (commands[cleaned[0]]) {
-        await commands[cleaned[0]].callback(state);
+        await commands[cleaned[0]].callback(state, cleaned[1]);
       } else {
         console.log('Unknown command');
       }
