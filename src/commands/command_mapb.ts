@@ -1,34 +1,20 @@
-import {createInterface} from 'node:readline';
-import {startREPL} from '../repl.js';
-import {getCommands, State} from '../state.js';
+import {State} from '../state.js';
 
-export async function commandMapb({
-  pokeApi,
-  prevLocationsURL,
-  rl,
-  pokedex,
-}: State) {
+export async function commandMapb(state: State) {
   try {
-    if (!prevLocationsURL) {
+    if (!state.prevLocationsURL) {
       console.log("you're on the first page");
       return;
     }
-    const locations = await pokeApi.fetchLocations(prevLocationsURL);
+    const locations = await state.pokeApi.fetchLocations(
+      state.prevLocationsURL,
+    );
+
+    state.nextLocationsURL = locations?.next;
+    state.prevLocationsURL = locations?.previous;
+
     locations?.results.forEach(location => {
       console.log(location.name);
-    });
-    rl.close();
-    startREPL({
-      commands: getCommands(),
-      rl: createInterface({
-        input: process.stdin,
-        output: process.stdout,
-        prompt: 'Pokedex > ',
-      }),
-      pokeApi,
-      pokedex,
-      nextLocationsURL: locations?.next,
-      prevLocationsURL: locations?.previous,
     });
   } catch (error) {
     console.log(error instanceof Error ? error.message : error);

@@ -1,24 +1,10 @@
-import { createInterface } from 'node:readline';
-import { startREPL } from '../repl.js';
-import { getCommands } from '../state.js';
-export async function commandMap({ pokeApi, nextLocationsURL, rl, pokedex, }) {
+export async function commandMap(state) {
     try {
-        const locations = await pokeApi.fetchLocations(nextLocationsURL);
+        const locations = await state.pokeApi.fetchLocations(state.nextLocationsURL);
+        state.nextLocationsURL = locations?.next;
+        state.prevLocationsURL = locations?.previous;
         locations?.results.forEach(location => {
             console.log(location.name);
-        });
-        rl.close();
-        startREPL({
-            commands: getCommands(),
-            rl: createInterface({
-                input: process.stdin,
-                output: process.stdout,
-                prompt: 'Pokedex > ',
-            }),
-            pokeApi,
-            pokedex,
-            nextLocationsURL: locations?.next,
-            prevLocationsURL: locations?.previous,
         });
     }
     catch (error) {

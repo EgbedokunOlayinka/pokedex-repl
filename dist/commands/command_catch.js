@@ -1,15 +1,12 @@
-import { startREPL } from '../repl.js';
-import { getCommands } from '../state.js';
-import { createInterface } from 'node:readline';
 const DIFFICULTY = 0.03;
-export async function commandCatch({ pokeApi, rl, nextLocationsURL, prevLocationsURL, pokedex }, pokemonName) {
+export async function commandCatch(state, pokemonName) {
     try {
         if (!pokemonName) {
             console.log('Please provide a pokemon name');
             return;
         }
         console.log(`Throwing a Pokeball at ${pokemonName}...`);
-        const pokemon = await pokeApi.fetchPokemonInfo(pokemonName);
+        const pokemon = await state.pokeApi.fetchPokemonInfo(pokemonName);
         if (pokemon) {
             const chance = Math.exp(-DIFFICULTY * pokemon.base_experience);
             const roll = Math.random();
@@ -17,24 +14,12 @@ export async function commandCatch({ pokeApi, rl, nextLocationsURL, prevLocation
             console.log(pokemonCaught
                 ? `${pokemonName} was caught!`
                 : `${pokemonName} escaped!`);
-            if (!pokemonCaught || pokedex[pokemonName])
+            if (pokemonCaught) {
+                console.log('You may now inspect it with the inspect command.');
+            }
+            if (!pokemonCaught || state.pokedex[pokemonName])
                 return;
-            rl.close();
-            startREPL({
-                commands: getCommands(),
-                rl: createInterface({
-                    input: process.stdin,
-                    output: process.stdout,
-                    prompt: 'Pokedex > ',
-                }),
-                pokeApi,
-                nextLocationsURL,
-                prevLocationsURL,
-                pokedex: {
-                    ...pokedex,
-                    [pokemonName]: pokemon,
-                },
-            });
+            state.pokedex = { ...state.pokedex, [pokemonName]: pokemon };
         }
     }
     catch (error) {
